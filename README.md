@@ -66,4 +66,4 @@ php artisan migrate
 php artisan make:migrations
 php artisan make:migration create_student_table
 php artisan make:model Student
-php artisan make:controller api/student
+php artisan make:controller api/Estudiante

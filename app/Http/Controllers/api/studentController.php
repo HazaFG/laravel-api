@@ -23,7 +23,7 @@ class studentController extends Controller
         }
     }
 
-    public funtion store(Request $request){
+    public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
@@ -52,7 +52,14 @@ class studentController extends Controller
                 'message' => 'Error al crear el estudiante',
                 'status' => 500
             ];
-            return response()->json($data, 500)
+            return response()->json($data, 500);
         }
+
+        $data = [
+            'student' => $student,
+            'status' => 201
+        ];
+
+        return response()->json($data, 201);
     }
 }
