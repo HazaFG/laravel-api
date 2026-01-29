@@ -15,6 +15,4 @@ Route::put('/estudiantes/{id}', function() {
     return 'Actualizando estudiante';
 });
 
-Route::delete('/estudiantes/{id}', function() {
-    return 'Eliminando Estudiante';
-});
+Route::delete('/estudiantes/{id}',[studentController::class, 'destroy']);
