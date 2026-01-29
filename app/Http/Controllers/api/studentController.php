@@ -14,13 +14,12 @@ class studentController extends Controller
     public function index(){
         $estudiantes = Estudiante::all();
 
-        if($estudiantes->isEmpty()){
-            $data = [
-                'message' => 'No se encontraron estudiantes',
-                'status' => 200
-            ];
-            return response()->json($data, 404);
-        }
+        $data = [
+            'students' => $estudiantes,
+            'status' => 200
+        ];
+
+        return response()->json($data, 200);
     }
 
     public function store(Request $request){
