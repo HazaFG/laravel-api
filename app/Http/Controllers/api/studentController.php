@@ -7,153 +7,67 @@ use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-//Este controller tendra los metodos o funciones cuando se visiten mis rutas
-
+//NI modo, vamos a adaptar este controller para devolver las vistas en blade ahora jeje
 class studentController extends Controller
 {
-    // GET de todos los estudiantes
-    public function index(){
-        $estudiantes = Estudiante::all();
-
-        $data = [
-            'students' => $estudiantes,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+    // Listado de estudiantes devuelto en blade
+    public function index()
+    {
+        $students = Estudiante::all();
+        return view('estudiantes.index', compact('students'));
     }
 
-    //POST de los estudiantes
-    public function store(Request $request){
+    // Formulario de creación
+    public function create()
+    {
+        return view('estudiantes.create');
+    }
 
-        //Validaciones para el formulario de registro de usuarios
-        $validator = Validator::make($request->all(), [
+    // Guardar nuevo estudiante
+    public function store(Request $request)
+    {
+        $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|unique:student',
             'phone' => 'required|digits:10',
-            'language' => 'required|in:English, Spanish, French'
+            'language' => 'required|in:English,Spanish,French'
         ]);
 
-        //Catch por si hay algun error en la validacion de los datos
-        if($validator ->fails()){
-            $data= [
-                'message' => 'Error en la validacion de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
+        Estudiante::create($request->all());
 
-        //Y si no, pues aqui jeje
-        $student = Estudiante::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'language' => $request->language,
-        ]);
-
-        if(!$student){
-            $data = [
-                'message' => 'Error al crear el estudiante',
-                'status' => 500
-            ];
-            return response()->json($data, 500);
-        }
-
-        $data = [
-            'student' => $student,
-            'status' => 201
-        ];
-
-        return response()->json($data, 201);
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiante creado con éxito');
     }
 
-    // GET por id jeje
-    public function show($id){
-        $student = Estudiante::find($id);
-
-        if(!$student){
-            $data = [
-                'message' => 'Estudiante no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $data = [
-            'student' => $student,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+    // Formulario de edición
+    public function edit($id)
+    {
+        $student = Estudiante::findOrFail($id);
+        return view('estudiantes.edit', compact('student'));
     }
 
-    //DELETE
-    public function destroy($id){
-        $student = Estudiante::find($id);
+    // Actualizar estudiante
+    public function update(Request $request, $id)
+    {
+        $student = Estudiante::findOrFail($id);
 
-        //Si no existe el estudiando aqui voy a crear un arreglo que devolvere como json para decir que no fue encontrado el estudiante
-        if(!$student){
-            $data = [
-                'message' => 'Estudiante no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        //Aqui pues se hace el delete xd
-        $student->delete();
-
-        //Arreglo para mandar como json
-        $data = [
-            'message' => 'Estudiante eliminado correctamente',
-            'status' => 200
-        ];
-
-        //Respuesta status 200
-        return response()->json($data, 200);
-    }
-
-    //UPDATE
-    public function update(Request $request, $id){
-        $student = Estudiante::find($id);
-
-        if(!$student){
-            $data = [
-                'message' => 'Estudiante no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|unique:student,email,'.$id,
             'phone' => 'required|digits:10',
             'language' => 'required|in:English,Spanish,French',
         ]);
 
-        if($validator->fails()){
-            $data = [
-                'message' => 'Error en la validacion de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
+        $student->update($request->all());
 
-        $student->name = $request->name;
-        $student->email = $request->email;
-        $student->phone = $request->phone;
-        $student->language = $request->language;
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado');
+    }
 
-        $student->save();
+    // Eliminar estudiante
+    public function destroy($id)
+    {
+        $student = Estudiante::findOrFail($id);
+        $student->delete();
 
-        $data = [
-            'student' => $student,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiante eliminado');
     }
 }
