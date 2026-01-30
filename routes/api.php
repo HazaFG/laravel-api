@@ -11,8 +11,6 @@ Route::get('/estudiantes/{id}', [studentController::class, 'show']);
 
 Route::post('/estudiantes', [studentController::class, 'store']);
 
-Route::put('/estudiantes/{id}', function() {
-    return 'Actualizando estudiante';
-});
+Route::put('/estudiantes/{id}', [studentController::class, 'update']);
 
 Route::delete('/estudiantes/{id}',[studentController::class, 'destroy']);
